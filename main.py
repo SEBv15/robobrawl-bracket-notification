@@ -3,7 +3,7 @@ import time
 import datetime
 from notification import notifyTimeChanged, notifyMatchSoon
 
-SECRET_ACCESS_TOKEN = "secretToken"
+SECRET_ACCESS_TOKEN = "secretToken" # IF this is wrong, you will still get the data, but no phone numbers
 BRACKET = "8-team-example"
 MINUTES_BEFORE = 5 # amount of minutes before the match to send the notification
 
@@ -20,12 +20,15 @@ def getMatches(bracket):
 
 def getMatchTime(date, time):
     if (time):
-        if (date):
-            matchTime = datetime.datetime.strptime(date + " " + time, '%m/%d/%Y %I:%M:%S %p')
-        else:
-            matchTime = datetime.datetime.strptime(datetime.datetime.strftime(datetime.date.today(),"%m/%d/%Y") + " " + time, '%m/%d/%Y %I:%M:%S %p')
+        try:
+            if (date):
+                matchTime = datetime.datetime.strptime(date + " " + time, '%m/%d/%Y %I:%M:%S %p')
+            else:
+                matchTime = datetime.datetime.strptime(datetime.datetime.strftime(datetime.date.today(),"%m/%d/%Y") + " " + time, '%m/%d/%Y %I:%M:%S %p')
 
-        return matchTime
+            return matchTime
+        except:
+            return None
     else:
         return None
 
@@ -45,7 +48,7 @@ def analyzeMatch(match, index, teams):
                     if team["name"] in notified: 
                         notified.remove(team["name"]) # I DON'T KNOW IF I SHOULD ACTUALLY DO THIS. WHEN PEOPLE ADJUST THE TIME RIGHT BEFORE A MATCH, PEOPLE MIGHT GET SPAMMED
                     # notify both teams
-                    notifyTimeChanged(team, match["date"], match["time"])
+                    notifyTimeChanged(team, getMatchTime(match["date"], match["time"]))
 
     except:
         print("error finding time modification")
@@ -63,7 +66,7 @@ def analyzeMatch(match, index, teams):
                 for team in teamsToNotify:
                     if not team["name"] in notified:
                         notified.append(team["name"])
-                        notifyMatchSoon(team, minutesUntil)
+                        notifyMatchSoon(team, matchTime, minutesUntil)
         else:
             #print("NO TIME")
             pass
