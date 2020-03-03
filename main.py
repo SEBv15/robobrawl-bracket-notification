@@ -18,8 +18,10 @@ def getMatches(bracket):
         rounds += bracketRound
     return rounds
 
+# this function is pretty ugly but I don't know how to do it better
 def getMatchTime(date, time):
     if (time):
+        # try with correctly formatted time
         try:
             if (date):
                 matchTime = datetime.datetime.strptime(date + " " + time, '%m/%d/%Y %I:%M:%S %p')
@@ -28,7 +30,25 @@ def getMatchTime(date, time):
 
             return matchTime
         except:
-            return None
+            # try with only hours and minutes (can happen when someone enters it wrong and autoformatting gives up)
+            try:
+                if (date):
+                    matchTime = datetime.datetime.strptime(date + " " + time, '%m/%d/%Y %I:%M %p')
+                else:
+                    matchTime = datetime.datetime.strptime(datetime.datetime.strftime(datetime.date.today(),"%m/%d/%Y") + " " + time, '%m/%d/%Y %I:%M %p')
+
+                return matchTime
+            except:
+                # try with superior 24 hour time format
+                try:
+                    if (date):
+                        matchTime = datetime.datetime.strptime(date + " " + time, '%m/%d/%Y %H:%M')
+                    else:
+                        matchTime = datetime.datetime.strptime(datetime.datetime.strftime(datetime.date.today(),"%m/%d/%Y") + " " + time, '%m/%d/%Y %H:%M')
+
+                    return matchTime
+                except:
+                    return None
     else:
         return None
 
