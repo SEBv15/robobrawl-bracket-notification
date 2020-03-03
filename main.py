@@ -7,7 +7,9 @@ SECRET_ACCESS_TOKEN = "secretToken"
 BRACKET = "8-team-example"
 MINUTES_BEFORE = 5 # amount of minutes before the match to send the notification
 
+# the previous 1D match array
 previous = []
+# array of team names that have been notified about their match starting soon
 notified = []
 
 def getMatches(bracket):
@@ -22,6 +24,7 @@ def analyzeMatch(match, index, teams):
 
     try:
     #if True:
+        # TODO: Don't notify if the new and old match time is in the past
         if (len(previous) > index):
             # check if time changed
             if (previous[index]["time"] != match["time"] or previous[index]["date"] != match["date"]):
