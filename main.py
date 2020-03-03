@@ -18,6 +18,17 @@ def getMatches(bracket):
         rounds += bracketRound
     return rounds
 
+def getMatchTime(date, time):
+    if (time):
+        if (date):
+            matchTime = datetime.datetime.strptime(date + " " + time, '%m/%d/%Y %I:%M:%S %p')
+        else:
+            matchTime = datetime.datetime.strptime(datetime.datetime.strftime(datetime.date.today(),"%m/%d/%Y") + " " + time, '%m/%d/%Y %I:%M:%S %p')
+
+        return matchTime
+    else:
+        return None
+
 def analyzeMatch(match, index, teams):
     global previous
     global notified
@@ -41,12 +52,8 @@ def analyzeMatch(match, index, teams):
     
     try:
     #if True:
-        if (match["time"]):
-            if (match["date"]):
-                matchTime = datetime.datetime.strptime(match["date"] + " " + match["time"], '%m/%d/%Y %I:%M:%S %p')
-            else:
-                matchTime = datetime.datetime.strptime(datetime.datetime.strftime(datetime.date.today(),"%m/%d/%Y") + " " + match["time"], '%m/%d/%Y %I:%M:%S %p')
-
+        matchTime = getMatchTime(match["date"], match["time"])
+        if (matchTime):
             delta = matchTime - datetime.datetime.now()
 
             # If match is in MINUTES_BEFORE minutes, alert
