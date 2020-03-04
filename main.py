@@ -58,17 +58,22 @@ def analyzeMatch(match, index, teams):
 
     try:
     #if True:
-        # TODO: Don't notify if the new and old match time is in the past
         if (len(previous) > index):
             # check if time changed
             if (previous[index]["time"] != match["time"] or previous[index]["date"] != match["date"]):
-                teamsToNotify = filter(lambda t: t["name"] in match["teams"], teams)
-                # remove team from notified list so they get the "match is in N minutes" message again
-                for team in teamsToNotify:
-                    if team["name"] in notified: 
-                        notified.remove(team["name"]) # I DON'T KNOW IF I SHOULD ACTUALLY DO THIS. WHEN PEOPLE ADJUST THE TIME RIGHT BEFORE A MATCH, PEOPLE MIGHT GET SPAMMED
-                    # notify both teams
-                    notifyTimeChanged(team, getMatchTime(match["date"], match["time"]))
+
+                # check if either the new or old match time is in the future so we don't send messages about matches that already happened
+                if (getMatchTime(previous[index]["date"], previous[index]["time"]) > datetime.datetime.now()
+                    or getMatchTime(match["date"], match["time"]) > datetime.datetime.now()):
+
+                    teamsToNotify = filter(lambda t: t["name"] in match["teams"], teams)
+                    # remove team from notified list so they get the "match is in N minutes" message again
+                    for team in teamsToNotify:
+                        if team["name"] in notified: 
+                            # TODO: I DON'T KNOW IF I SHOULD ACTUALLY DO THIS. WHEN PEOPLE ADJUST THE TIME RIGHT BEFORE A MATCH, PEOPLE MIGHT GET SPAMMED
+                            notified.remove(team["name"]) 
+                        # notify both teams
+                        notifyTimeChanged(team, getMatchTime(match["date"], match["time"]))
 
     except:
         print("error finding time modification")
